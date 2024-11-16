@@ -28,7 +28,7 @@ G = [0.1, 0.4];     % Proportional Gain
 
 K_lqr = [0.1287, 0.5764];
 
-
+psi_k = [-2, -4, -6, -8, -10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10, 8, 6, 4, 2, 0];
 
 %x_1k = ;
 
@@ -37,9 +37,18 @@ K_lqr = [0.1287, 0.5764];
 function x = myStateTransitionFcn(x, u)
 
 % dt = 0.01 %Sample Time
+x1 = x(1);
+x2 = x(2) + x(3);
+x3 = x(3) + u;
 
-x = 
+x = [x1; x2; x3];
 
 % Make function inside here
 
 end
+
+function yk = meaurement(x)
+
+y = 
+
+end 
