@@ -28,7 +28,7 @@ y1 = y1(idx1);
 [unique_x1, ~, idx] = unique(x1);
 y1_unique = accumarray(idx, y1, [], @mean);
 
-x1_new = linspace(min(x1), max(x1), 501);
+x1_new = linspace(min(x1), max(x1), 5001);
 x1_new = x1_new(:);
 
 % Perform interpolation
@@ -57,7 +57,7 @@ y2 = y2(idx2);
 [unique_x2, ~, idx2] = unique(x2);
 y2_unique = accumarray(idx2, y2, [], @mean);
 
-x2_new = linspace(min(x2), max(x2), 501);
+x2_new = linspace(min(x2), max(x2), 5001);
 x2_new = x2_new(:);
 
 % Perform interpolation
@@ -86,7 +86,7 @@ y3 = y3(idx3);
 [unique_x3, ~, idx3] = unique(x3);
 y3_unique = accumarray(idx3, y3, [], @mean);
 
-x3_new = linspace(min(x3), max(x3), 501);
+x3_new = linspace(min(x3), max(x3), 5001);
 x3_new = x3_new(:);
 
 % Perform interpolation
