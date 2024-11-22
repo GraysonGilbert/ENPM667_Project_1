@@ -2,6 +2,7 @@
 load('x1_timeseries.mat', 'x1_ts');
 load('x2_timeseries.mat', 'x2_ts');
 load('x3_timeseries.mat', 'x3_ts');
+load('x1_stable_timeseries.mat', 'x1_stable_ts');
 %load('psi_timeseries.mat', 'psi_ts');
 
 psi_data = readtable('X1_X2_X3_data.xlsx', 'Sheet','psi_k');
@@ -32,6 +33,7 @@ Q_lqr = [30, 0; 0, 1];
 R_lqr = 1000;
 
 prev_x_hat = [5; 2; 3];
+%prev_x_hat = [2; 10; 5];
 
 G = [0.1, 0.4];     % Proportional Gain
 
@@ -47,7 +49,7 @@ prev_u_k = 0;
 
 function x = myStateTransitionFcn(x, u)
 
-dt = 0.01; %Sample Time
+dt = 0.1; %Sample Time
 
 x = x + [x(1); x(2) + x(3); x(3) + u] * dt;
 

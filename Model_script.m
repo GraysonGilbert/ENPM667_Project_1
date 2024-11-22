@@ -1,14 +1,18 @@
 % Predict 
 x_prediction = table();
 ts = 0;
-for i = 2:5001
+for i = 2:500
 % Predict state & error covariance
 %disp(prev_x_hat)
-x_hat = A * prev_x_hat;
+%x_hat = A * prev_x_hat;
+x_hat = [prev_x_hat(1); prev_x_hat(2) + prev_x_hat(3); prev_x_hat(3) + prev_u_k];
+
 P_k = A * prev_P_k* A' + Q_ekf;
 
 
 % Work Needed to Compute Kalman Gain
+
+%prev_u_k = -G(1) * prev_x_hat(2) - G(2) * prev_x_hat(3);
 
 % Output Meaurements
 
@@ -17,21 +21,32 @@ y_k = [x1_ts.Data(i); x1_ts.Data(i-1)];
 %disp(y_k)
 
 %y_hat_k = [x_hat(1) * cos(x_hat(2) + psi_vals(i)); prev_x_hat(1) * cos(prev_x_hat(2) + psi_vals(i-1))];
-h = [x1_ts.Data(i) * cosd(x2_ts.Data(i) + psi_vals(i));
-    x1_ts.Data(i) * cosd(x2_ts.Data(i) - x3_ts.Data(i) + prev_u_k + psi_vals(i-1))];
+
+% New h
+%h = [x_hat(1) * cosd(x_hat(2) + psi_vals(i));
+%    x_hat(1) * cosd(x_hat(2) - x_hat(3) + prev_u_k + psi_vals(i-1))];
+
+% New h no psi test
+h = [x_hat(1) * cosd(x_hat(2) + psi_vals(1));
+    x_hat(1) * cosd(x_hat(2) - x_hat(3) + prev_u_k + psi_vals(1))];
+
 
 
 y_hat_k = h;
 %disp('y_hat_k')
 %disp(y_hat_k)
 
-% Jacobian
-C = [cosd(x2_ts.Data(i) + psi_vals(i)), -x1_ts.Data(i) * sind(x2_ts.Data(i) + psi_vals(i)), 0;
-    cosd(x2_ts.Data(i)-x3_ts.Data(i) + prev_u_k + psi_vals(i-1)), -x1_ts.Data(i) * sind(x2_ts.Data(i)-x3_ts.Data(i)+ prev_u_k + psi_vals(i-1)), x1_ts.Data(i) * sind(x2_ts.Data(i)-x3_ts.Data(i) + prev_u_k + psi_vals(i-1))];
+% New Jacobian
+%C = [cosd(x_hat(2) + psi_vals(i)), -x_hat(1) * sind(x_hat(2) + psi_vals(i)), 0;
+%    cosd(x_hat(2)-x_hat(3) + prev_u_k + psi_vals(i-1)), -x_hat(1) * sind(x_hat(2)-x_hat(3)+ prev_u_k + psi_vals(i-1)), x_hat(1) * sind(x_hat(2) - x_hat(3) + prev_u_k + psi_vals(i-1))];
+
+% New Jacobian No psi test
+C = [cosd(x_hat(2) + psi_vals(1)), -x_hat(1) * sind(x_hat(2) + psi_vals(1)), 0;
+    cosd(x_hat(2)-x_hat(3) + prev_u_k + psi_vals(1)), -x_hat(1) * sind(x_hat(2)-x_hat(3)+ prev_u_k + psi_vals(1)), x_hat(1) * sind(x_hat(2) - x_hat(3) + prev_u_k + psi_vals(1))];
 
 
 % Compute Kalman Gain
-K_k = P_k * C' * ((C * P_k * C') + R_ekf)^(-1);
+K_k = P_k * C' * ((C * P_k * C') + R_ekf)^-1;
 
 
 % Compute the Estimate
@@ -42,13 +57,13 @@ x_hat = x_hat + K_k*(y_k - y_hat_k);
 
 P_k = P_k - (K_k * C * P_k);
 
+u_k = (-G(1) * x_hat(2)) - (G(2) * x_hat(3));
 
-u_k = -G(1) * x_hat(2) - G(2) * x_hat(3);
 prev_u_k = u_k;
 prev_x_hat = x_hat;
 prev_P_k = P_k;
 
-ts = ts + 0.01;
+ts = ts + 0.1;
 x_prediction = [x_prediction; table(ts, x_hat(1), x_hat(2), x_hat(3), 'VariableNames', {'time', 'x1', 'x2', 'x3'})];
 
 end
@@ -57,6 +72,17 @@ end
 % Plot the predicted data vs the actual data
 figure;
 plot(x1_ts.Time, x1_ts.Data, 'DisplayName', 'Original X1 Data'); % Original points
+hold on;
+plot(x_prediction.time, x_prediction.x1, '-', 'DisplayName', 'Estimated Value'); % Interpolated points
+legend;
+xlabel('x');
+ylabel('y');
+title('Data Interpolation');
+grid on;
+
+% Plot the predicted data vs the actual data
+figure;
+plot(x1_stable_ts.Time, x1_stable_ts.Data, 'DisplayName', 'Original X1 Data'); % Original points
 hold on;
 plot(x_prediction.time, x_prediction.x1, '-', 'DisplayName', 'Estimated Value'); % Interpolated points
 legend;
@@ -87,7 +113,7 @@ ylabel('y');
 title('Data Interpolation');
 grid on;
 
-
+%disp(-x1_ts.Data(i))
 disp(C)
 disp(K_k)
 disp(x_hat)
