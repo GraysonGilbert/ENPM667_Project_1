@@ -3,6 +3,7 @@ x1_data = readtable('X1_X2_X3_data.xlsx', 'Sheet','x1');
 x2_data = readtable('X1_X2_X3_data.xlsx', 'Sheet','x2');
 x3_data = readtable('X1_X2_X3_data.xlsx', 'Sheet','x3');
 psi_data = readtable('X1_X2_X3_data.xlsx', 'Sheet','psi_k');
+x1_stable_data = readtable('X1_X2_X3_data.xlsx', 'Sheet','x1_stable');
 
 % Extract columns
 x1 = x1_data{:,1}; % Column 1: independent variable
@@ -20,6 +21,10 @@ y3 = x3_data{:,2}; % Column 2: dependent variable
 psi_time = psi_data{:,1};
 psi_vals = psi_data{:,2};
 
+% Extract Columns
+x1_stable_time = x1_stable_data{:,1};
+x1_stable_vals = x1_stable_data{:,2};
+
 % x1 Data Organizing
 [x1, idx1] = sort(x1);
 y1 = y1(idx1);
@@ -28,7 +33,7 @@ y1 = y1(idx1);
 [unique_x1, ~, idx] = unique(x1);
 y1_unique = accumarray(idx, y1, [], @mean);
 
-x1_new = linspace(min(x1), max(x1), 5001);
+x1_new = linspace(min(x1), max(x1), 501);
 x1_new = x1_new(:);
 
 % Perform interpolation
@@ -57,7 +62,7 @@ y2 = y2(idx2);
 [unique_x2, ~, idx2] = unique(x2);
 y2_unique = accumarray(idx2, y2, [], @mean);
 
-x2_new = linspace(min(x2), max(x2), 5001);
+x2_new = linspace(min(x2), max(x2), 501);
 x2_new = x2_new(:);
 
 % Perform interpolation
@@ -86,12 +91,28 @@ y3 = y3(idx3);
 [unique_x3, ~, idx3] = unique(x3);
 y3_unique = accumarray(idx3, y3, [], @mean);
 
-x3_new = linspace(min(x3), max(x3), 5001);
+x3_new = linspace(min(x3), max(x3), 501);
 x3_new = x3_new(:);
 
 % Perform interpolation
 y3_new = interp1(unique_x3, y3_unique, x3_new, 'linear');
 y3_new = y3_new(:);
+
+
+% x1 Stable Data Organizing
+[x1_stable_time, idx1_stable] = sort(x1_stable_time);
+x1_stable_data = x1_stable_vals(idx1_stable);
+
+% Remove duplicates by averaging `y1` values for duplicate `x1`
+[unique_x1_stable_time, ~, idx1_stable] = unique(x1_stable_time);
+x1_stable_data_unique = accumarray(idx1_stable, x1_stable_data, [], @mean);
+
+x1_stable_time_new = linspace(min(x1_stable_time), max(x1_stable_time), 501);
+x1_stable_time_new = x1_stable_time_new(:);
+
+% Perform interpolation
+x1_stable_data_new = interp1(unique_x1_stable_time, x1_stable_data_unique, x1_stable_time_new, 'linear');
+x1_stable_data_new = x1_stable_data_new(:);
 
 
 %{
@@ -112,8 +133,10 @@ x1_ts = timeseries(y1_new, x1_new);
 x2_ts = timeseries(y2_new, x2_new);
 x3_ts = timeseries(y3_new, x3_new);
 psi_ts = timeseries(psi_vals, psi_time);
+x1_stable_ts = timeseries(x1_stable_data_new, x1_stable_time_new);
 
 save('x1_timeseries.mat', 'x1_ts');
 save('x2_timeseries.mat', 'x2_ts');
 save('x3_timeseries.mat', 'x3_ts');
 save('psi_timeseries.mat', 'psi_ts');
+save('x1_stable_timeseries.mat', 'x1_stable_ts');
