@@ -11,7 +11,9 @@ psi_time = psi_data{:,1};
 psi_vals = psi_data{:,2};
 
 
-%x = [(C_p * I_theta * exp(-c * d)) / d^2; phi; phi_dot];    % State Vector
+% Initial Conditions
+
+x_k = [4.995;2.5;3];
 
 A = [ 1, 0, 0; 0, 1, 1; 0, 0, 1];
 B = [0; 0; 1];
@@ -26,9 +28,18 @@ B = [0;
 
 % Given Parameters
 
+% System Noise Parameters
+
 Q_sys = [0.0025, 0, 0; 0, 0.0025, 0; 0, 0, 0.0025];
 
 R_sys = 0.001;
+
+w = [0; 0; 0];
+
+v = 0;
+
+
+% Extended Kalman Filter Parameters
 
 prev_P_k = [100, 0, 0; 0, 100, 0; 0, 0, 100];
 
@@ -36,37 +47,32 @@ Q_ekf = [0.0025, 0, 0; 0, 0.0025, 0; 0, 0, 0.0025];
 
 R_ekf = [1, 0; 0, 1];
 
-Q_lqr = [30, 0; 0, 1];
-
-R_lqr = 1000;
-
 prev_x_hat = [5; 2; 3];
 %prev_x_hat = [2; 10; 5];
 
 G = [0.1, 0.4];     % Proportional Gain
 
+
+prev_u_k_ekf = 0;
+
+
+% LQR Parameters
+
+Q_lqr = [30, 0; 0, 1];
+
+R_lqr = 1000;
+%R_lqr = 1000;
+
 K_lqr = [0.1287, 0.5764];
 
-%psi_k = [-2, -4, -6, -8, -10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10, 8, 6, 4, 2, 0];
+u_k_lqr = -K_lqr * [prev_x_hat(2);prev_x_hat(3)];
 
-prev_u_k = 0;
+A_lqr = [1, 1; 0, 1];
+B_lqr = [0; 1];
 
-%x_1k = ;
 
-%x_k = [x_1k; x_2k; x_3k];
 
-function x = myStateTransitionFcn(x, u)
+%K_lqr = lqr(A_lqr, B_lqr, Q_lqr, R_lqr);
 
-dt = 0.1; %Sample Time
 
-x = x + [x(1); x(2) + x(3); x(3) + u] * dt;
 
-% Make function inside here
-
-end
-
-%function yk = meaurement(x)
-
-%y =; 
-
-%end 
