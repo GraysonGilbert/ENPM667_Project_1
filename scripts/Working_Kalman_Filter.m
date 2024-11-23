@@ -5,14 +5,14 @@ for i = 2:500
 % Predict state & error covariance
 %disp(prev_x_hat)
 %x_hat = A * prev_x_hat;
-x_hat = [prev_x_hat(1); prev_x_hat(2) + prev_x_hat(3); prev_x_hat(3) + prev_u_k];
+x_hat = [prev_x_hat(1); prev_x_hat(2) + prev_x_hat(3); prev_x_hat(3) + prev_u_k_ekf];
 
 P_k = A * prev_P_k* A' + Q_ekf;
 
 
 % Work Needed to Compute Kalman Gain
 
-%prev_u_k = -G(1) * prev_x_hat(2) - G(2) * prev_x_hat(3);
+%prev_u_k_ekf = -G(1) * prev_x_hat(2) - G(2) * prev_x_hat(3);
 
 % Output Meaurements
 
@@ -23,12 +23,12 @@ y_k = [x1_ts.Data(i); x1_ts.Data(i-1)];
 %y_hat_k = [x_hat(1) * cos(x_hat(2) + psi_vals(i)); prev_x_hat(1) * cos(prev_x_hat(2) + psi_vals(i-1))];
 
 % New h
-h = [x_hat(1) * cosd(x_hat(2) + psi_vals(i));
-    x_hat(1) * cosd(x_hat(2) - x_hat(3) + prev_u_k + psi_vals(i-1))];
+% h = [x_hat(1) * cosd(x_hat(2) + psi_vals(i));
+%     x_hat(1) * cosd(x_hat(2) - x_hat(3) + prev_u_k_ekf + psi_vals(i-1))];
 
 % New h no psi test
-%h = [x_hat(1) * cosd(x_hat(2) + psi_vals(1));
-%    x_hat(1) * cosd(x_hat(2) - x_hat(3) + prev_u_k + psi_vals(1))];
+h = [x_hat(1) * cosd(x_hat(2) + psi_vals(1));
+   x_hat(1) * cosd(x_hat(2) - x_hat(3) + prev_u_k_ekf + psi_vals(1))];
 
 
 
@@ -37,12 +37,12 @@ y_hat_k = h;
 %disp(y_hat_k)
 
 % New Jacobian
-C = [cosd(x_hat(2) + psi_vals(i)), -x_hat(1) * sind(x_hat(2) + psi_vals(i)), 0;
-    cosd(x_hat(2)-x_hat(3) + prev_u_k + psi_vals(i-1)), -x_hat(1) * sind(x_hat(2)-x_hat(3)+ prev_u_k + psi_vals(i-1)), x_hat(1) * sind(x_hat(2) - x_hat(3) + prev_u_k + psi_vals(i-1))];
+% C = [cosd(x_hat(2) + psi_vals(i)), -x_hat(1) * sind(x_hat(2) + psi_vals(i)), 0;
+%     cosd(x_hat(2)-x_hat(3) + prev_u_k_ekf + psi_vals(i-1)), -x_hat(1) * sind(x_hat(2)-x_hat(3)+ prev_u_k_ekf + psi_vals(i-1)), x_hat(1) * sind(x_hat(2) - x_hat(3) + prev_u_k_ekf + psi_vals(i-1))];
 
 % New Jacobian No psi test
-%C = [cosd(x_hat(2) + psi_vals(1)), -x_hat(1) * sind(x_hat(2) + psi_vals(1)), 0;
-%    cosd(x_hat(2)-x_hat(3) + prev_u_k + psi_vals(1)), -x_hat(1) * sind(x_hat(2)-x_hat(3)+ prev_u_k + psi_vals(1)), x_hat(1) * sind(x_hat(2) - x_hat(3) + prev_u_k + psi_vals(1))];
+C = [cosd(x_hat(2) + psi_vals(1)), -x_hat(1) * sind(x_hat(2) + psi_vals(1)), 0;
+   cosd(x_hat(2)-x_hat(3) + prev_u_k_ekf + psi_vals(1)), -x_hat(1) * sind(x_hat(2)-x_hat(3)+ prev_u_k_ekf + psi_vals(1)), x_hat(1) * sind(x_hat(2) - x_hat(3) + prev_u_k_ekf + psi_vals(1))];
 
 
 % Compute Kalman Gain
@@ -59,7 +59,7 @@ P_k = P_k - (K_k * C * P_k);
 
 u_k = (-G(1) * x_hat(2)) - (G(2) * x_hat(3));
 
-prev_u_k = u_k;
+prev_u_k_ekf = u_k;
 prev_x_hat = x_hat;
 prev_P_k = P_k;
 
