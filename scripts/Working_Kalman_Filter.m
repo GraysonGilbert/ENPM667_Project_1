@@ -16,7 +16,8 @@ P_k = A * prev_P_k* A' + Q_ekf;
 
 % Output Meaurements
 
-y_k = [x1_ts.Data(i); x1_ts.Data(i-1)];
+y_k = [x1_ts.Data(i) * cosd(x2_ts.Data(i)); 
+       x1_ts.Data(i-1) * cosd(x2_ts.Data(i-1))];
 %disp('y_k')
 %disp(y_k)
 
