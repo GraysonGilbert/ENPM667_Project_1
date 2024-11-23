@@ -13,7 +13,8 @@ psi_vals = psi_data{:,2};
 
 % Initial Conditions
 
-x_k = [4.995;2.5;3];
+x_k = [4.99;2.5;3];
+x1_0 = x1_ts.getsampleusingtime(0).Data;
 
 A = [ 1, 0, 0; 0, 1, 1; 0, 0, 1];
 B = [0; 0; 1];
@@ -45,7 +46,7 @@ prev_x_hat = [5; 2; 3];
 G = [0.1, 0.4];     % Proportional Gain
 
 
-prev_u_k_ekf = 0;
+prev_u_k_ekf = (-G(1)*prev_x_hat(2) - (G(2)*prev_x_hat(3)));
 
 
 % LQR Parameters
