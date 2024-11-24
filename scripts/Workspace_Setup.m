@@ -13,7 +13,7 @@ psi_vals = psi_data{:,2};
 
 % Initial Conditions
 
-x_k = [4.99;2.5;3];
+x_k = [4.9986;2.5123;2.9881];
 x1_0 = x1_ts.getsampleusingtime(0).Data;
 
 A = [ 1, 0, 0; 0, 1, 1; 0, 0, 1];
@@ -43,7 +43,7 @@ R_ekf = [1, 0; 0, 1];
 prev_x_hat = [5; 2; 3];
 %prev_x_hat = [2; 10; 5];
 
-G = [0.1, 0.4];     % Proportional Gain
+G = [0.15, 0.4];     % Proportional Gain
 
 
 prev_u_k_ekf = (-G(1)*prev_x_hat(2) - (G(2)*prev_x_hat(3)));
@@ -56,7 +56,7 @@ Q_lqr = [30, 0; 0, 1];
 R_lqr = 1000;
 %R_lqr = 1000;
 
-K_lqr = [0.1287, 0.5764];
+K_lqr = [0.01287, 0.5764];
 
 u_k_lqr = -K_lqr * [prev_x_hat(2);prev_x_hat(3)];
 
